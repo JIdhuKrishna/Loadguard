@@ -74,9 +74,10 @@ if "latest_result" not in st.session_state:
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-:root { --lg-green:#9BEA52; --lg-green-dark:#5C9F24; --lg-ink:#11191b; --lg-muted:#697679; --lg-line:#e7ece9; }
+:root { --lg-green:#9BEA52; --lg-green-dark:#5C9F24; --lg-ink:#11191b; --lg-muted:#4f5c5c; --lg-line:#e7ece9; }
 html, body, [class*="css"] { font-family:'DM Sans',sans-serif; }
 .stApp { background: #f3f6f4; color:var(--lg-ink); }
+.stApp p, .stApp li, .stApp label, .stApp .stMarkdown, .stApp [data-testid="stMarkdownContainer"] p { color:#2f3b39; }
 header[data-testid="stHeader"] { background:rgba(243,246,244,.92); }
 .block-container { max-width:1600px; padding-top:1.2rem; padding-bottom:2.4rem; }
 [data-testid="stSidebar"] { background:linear-gradient(165deg,#101819 0%,#0c1214 100%); border-right:1px solid #273031; }
@@ -98,46 +99,179 @@ header[data-testid="stHeader"] { background:rgba(243,246,244,.92); }
 .sidebar-note .note-copy {font-size:11px;color:#9eaea5;line-height:1.5;}
 .page-eyebrow { color:#5c9b31; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.3px; margin-bottom:6px; }
 .page-title { font-family:Manrope,sans-serif; font-weight:800; letter-spacing:-1.25px; font-size:30px; line-height:1.15; color:#151d1d; margin:0 0 5px 0; }
-.page-subtitle { color:#748080; font-size:13px; margin-bottom:20px; }
-.top-chip { display:inline-flex; align-items:center; gap:7px; background:white; border:1px solid var(--lg-line); padding:8px 12px; border-radius:999px; color:#4e5a59; font-size:11px; }
+.page-subtitle { color:#546262; font-size:13px; margin-bottom:20px; }
+.top-chip { display:inline-flex; align-items:center; gap:7px; background:white; border:1px solid var(--lg-line); padding:8px 12px; border-radius:999px; color:#344140; font-size:11px; font-weight:700; }
 .section-heading { background:#fff; border:1px solid #e6ece8; border-bottom:0; border-radius:16px 16px 0 0; padding:16px 18px 2px; margin-top:4px; }
 .section-heading + div { margin-top:0; }
 [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.section-heading) { margin-bottom:0; }
 .metric-card { background:white; border:1px solid #e6ece8; border-radius:17px; padding:17px 18px; min-height:118px; box-shadow:0 5px 18px rgba(21,38,30,.025); }
-.metric-top { display:flex; align-items:center; gap:9px; color:#687472; font-size:11px; font-weight:600; }
+.metric-top { display:flex; align-items:center; gap:9px; color:#465251; font-size:11px; font-weight:700; }
 .metric-icon { display:inline-flex; width:32px;height:32px;border-radius:11px;align-items:center;justify-content:center;background:#eaffd9;color:#386c1d;font-size:16px; }
 .metric-value { font-family:Manrope,sans-serif; font-size:27px; font-weight:800; letter-spacing:-.9px; margin-top:8px; color:#151d1d; }
-.metric-foot { color:#899391; font-size:10px; margin-top:1px; }
+.metric-foot { color:#5e6a69; font-size:10px; margin-top:1px; }
 .card-title { font-family:Manrope,sans-serif; font-size:15px; font-weight:800; letter-spacing:-.35px; margin-bottom:3px; color:#17201e; }
-.card-caption { color:#8a9590; font-size:11px; margin-bottom:12px; }
+.card-caption { color:#5b6864; font-size:11px; margin-bottom:12px; font-weight:600; }
 .model-card { background:linear-gradient(145deg,#172421 0%,#0c1414 100%); color:#f6fff6; border:1px solid #2d4236; border-radius:18px; padding:20px; min-height:235px; box-shadow:0 12px 26px rgba(20,52,31,.12); }
 .model-card .model-kicker {font-size:10px;color:#b2c8b4;letter-spacing:1px;text-transform:uppercase;}
 .model-card .model-name {font-family:Manrope,sans-serif;font-weight:800;font-size:21px;margin:10px 0 8px;}
 .model-card .model-status {display:inline-block;background:#baff7a;color:#18350b;padding:5px 10px;border-radius:99px;font-size:10px;font-weight:800;}
-.model-card .model-copy {font-size:11px;color:#bdcbc1;line-height:1.55;margin-top:14px;}
+.model-card .model-copy {font-size:11px;color:#d3dfd7;line-height:1.55;margin-top:14px;}
 .model-stat-row {display:flex;justify-content:space-between;border-top:1px solid #304039;margin-top:16px;padding-top:12px;gap:8px;}
-.model-stat {font-size:10px;color:#a8b9ae;}.model-stat strong {display:block;font-size:14px;color:#f7fff5;margin-bottom:2px;}
-.stack-wrap { position:relative; min-height:230px; width:100%; overflow:hidden; padding:6px 4px 12px; box-sizing:border-box; }
-.stack-card { position:absolute; top:8px; width:min(190px, 72%); height:205px; box-sizing:border-box; padding:14px; border:1px solid #dce8dc; border-radius:17px; background:linear-gradient(160deg,#ffffff 0%,#f3faef 100%); box-shadow:0 10px 24px rgba(22,42,26,.12); transition:transform .35s ease,opacity .35s ease; }
-.stack-card .stack-id {font-family:Manrope,sans-serif;font-size:12px;font-weight:800;color:#18221d;margin:8px 0 10px;}
-.stack-card .stack-label {font-size:9px;color:#849087;margin-top:8px;}
-.stack-card .stack-value {font-size:12px;font-weight:800;color:#1b241e;margin-top:2px;}
-.stack-status {display:inline-block;border-radius:99px;padding:5px 9px;font-size:9px;font-weight:800;margin-top:10px;}
+.model-stat {font-size:10px;color:#c3d2c8;}.model-stat strong {display:block;font-size:14px;color:#f7fff5;margin-bottom:2px;}
+.stack-wrap { position:relative; min-height:286px; width:100%; max-width:520px; margin:0 auto; overflow:hidden; padding:8px 6px 10px; box-sizing:border-box; }
+.stack-card { position:absolute; top:10px; width:min(286px, 84%); height:262px; box-sizing:border-box; padding:16px 16px 14px; border:1px solid #dce8dc; border-radius:24px; background:linear-gradient(160deg,#ffffff 0%,#f1f7ed 100%); box-shadow:0 16px 40px rgba(19,36,28,.14); transition:transform .35s ease,opacity .35s ease; }
+.stack-card::before { content:""; position:absolute; inset:0; border-radius:26px; background:radial-gradient(120% 75% at 10% 8%, rgba(155,234,82,.17) 0%, rgba(255,255,255,0) 70%); pointer-events:none; }
+.stack-card .stack-id {font-family:Manrope,sans-serif;font-size:19px;font-weight:800;color:#18221d;margin:8px 0 10px;letter-spacing:-.3px;line-height:1.15;}
+.stack-card .stack-label {font-size:11px;color:#5a6862;margin-top:9px;}
+.stack-card .stack-value {font-size:18px;font-weight:800;color:#1b241e;margin-top:2px;letter-spacing:-.2px;line-height:1.1;}
+.stack-status {display:inline-block;border-radius:99px;padding:6px 10px;font-size:11px;font-weight:800;margin-top:10px;}
 .status-approved {background:#d9ffb9;color:#2e6816;}.status-rejected {background:#ffe0df;color:#a9302a;}.status-pending {background:#fff0bd;color:#8a6507;}
-.stack-empty { border:1px dashed #d5e0d7; border-radius:16px; background:#fafcf9; padding:25px 18px; text-align:center; color:#7b8980; font-size:12px; }
-div.stButton > button { border-radius:12px; min-height:40px; font-weight:700; border:1px solid #e0e8e1; }
-div.stButton > button[kind="primary"] { background:var(--lg-green); color:#14200f; border:1px solid var(--lg-green); }
-div.stButton > button[kind="primary"]:hover { background:#8bdd40; border-color:#8bdd40; color:#14200f; }
+.stack-empty { border:1px dashed #d5e0d7; border-radius:16px; background:#fafcf9; padding:25px 18px; text-align:center; color:#58655f; font-size:12px; }
+.stack-nav-count { text-align:center; padding-top:10px; color:#7d8882; font-size:15px; letter-spacing:-.1px; }
+
+/* Global button system: high contrast, consistent spacing, and visible states */
+div.stButton > button,
+div[data-testid="stFormSubmitButton"] button,
+button[data-testid="baseButton-primary"],
+button[data-testid="baseButton-secondary"] {
+    min-height:46px!important;
+    padding:10px 18px!important;
+    border-radius:14px!important;
+    border:1px solid #151a24!important;
+    background:#151a24!important;
+    color:#ffffff!important;
+    -webkit-text-fill-color:#ffffff!important;
+    font-weight:700!important;
+    box-shadow:0 8px 20px rgba(18,24,31,.12)!important;
+    transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .15s ease!important;
+    opacity:1!important;
+}
+
+div.stButton > button:hover,
+div[data-testid="stFormSubmitButton"] button:hover,
+button[data-testid="baseButton-primary"]:hover,
+button[data-testid="baseButton-secondary"]:hover {
+    background:#232937!important;
+    border-color:#232937!important;
+    color:#ffffff!important;
+    -webkit-text-fill-color:#ffffff!important;
+}
+
+div.stButton > button:focus,
+div[data-testid="stFormSubmitButton"] button:focus,
+button[data-testid="baseButton-primary"]:focus,
+button[data-testid="baseButton-secondary"]:focus {
+    outline:none!important;
+    box-shadow:0 0 0 3px rgba(155,234,82,.45)!important;
+}
+
+div.stButton > button:active,
+div[data-testid="stFormSubmitButton"] button:active,
+button[data-testid="baseButton-primary"]:active,
+button[data-testid="baseButton-secondary"]:active {
+    transform:translateY(1px)!important;
+}
+
+div.stButton > button:disabled,
+div[data-testid="stFormSubmitButton"] button:disabled,
+button[data-testid="baseButton-primary"]:disabled,
+button[data-testid="baseButton-secondary"]:disabled {
+    background:#4d5663!important;
+    border-color:#4d5663!important;
+    color:#ffffff!important;
+    -webkit-text-fill-color:#ffffff!important;
+    opacity:1!important;
+    filter:none!important;
+    box-shadow:none!important;
+}
+
+div.stButton > button *,
+div[data-testid="stFormSubmitButton"] button *,
+button[data-testid="baseButton-primary"] *,
+button[data-testid="baseButton-secondary"] * {
+    color:inherit!important;
+    -webkit-text-fill-color:inherit!important;
+    opacity:1!important;
+}
+
+/* Primary actions keep brand accent while preserving high contrast */
+div.stButton > button[kind="primary"],
+div[data-testid="stFormSubmitButton"] button[kind="primary"],
+button[data-testid="baseButton-primary"] {
+    background:var(--lg-green)!important;
+    border-color:#8ad746!important;
+    color:#10200b!important;
+    -webkit-text-fill-color:#10200b!important;
+}
+
+div.stButton > button[kind="primary"]:hover,
+div[data-testid="stFormSubmitButton"] button[kind="primary"]:hover,
+button[data-testid="baseButton-primary"]:hover {
+    background:#aef16f!important;
+    border-color:#98e45a!important;
+    color:#10200b!important;
+    -webkit-text-fill-color:#10200b!important;
+}
+
+/* Pagination buttons: tuned visual style, still governed by global readability */
+.stack-nav-left button {
+    background:#eef3ee!important;
+    border:1px solid #d4ddd4!important;
+    color:#2f3b39!important;
+    -webkit-text-fill-color:#2f3b39!important;
+    box-shadow:none!important;
+    font-size:15px!important;
+    font-weight:600!important;
+    justify-content:flex-start!important;
+}
+
+.stack-nav-left button:disabled {
+    background:#e3e8e3!important;
+    border-color:#d4dbd4!important;
+    color:#66726d!important;
+    -webkit-text-fill-color:#66726d!important;
+}
+
+.stack-nav-right button {
+    background:#151a24!important;
+    border-color:#151a24!important;
+    color:#ffffff!important;
+    -webkit-text-fill-color:#ffffff!important;
+    border-radius:18px!important;
+    font-size:16px!important;
+    font-weight:700!important;
+}
+
+.stack-nav-right button:disabled {
+    background:#2b3240!important;
+    border-color:#2b3240!important;
+    color:#ffffff!important;
+    -webkit-text-fill-color:#ffffff!important;
+}
 .stTextInput input, .stNumberInput input, .stSelectbox [data-baseweb="select"] > div, .stDateInput input { border-radius:11px!important; }
 [data-testid="stMetric"] { background:#fff; border:1px solid #e6ece8; padding:13px 15px; border-radius:14px; }
-[data-testid="stMetricLabel"] { color:#78847f!important; }
+[data-testid="stMetricLabel"] { color:#56635f!important; }
 [data-testid="stMetricValue"] { color:#17201d!important; font-family:Manrope,sans-serif; }
 hr { border-color:#e5ebe7; }
-.small-muted { color:#89958e;font-size:11px; }
+.small-muted { color:#60706a;font-size:11px; }
+.stCaption, [data-testid="stCaptionContainer"] { color:#5f6d68!important; }
+.assessment-ref-page { display:none; }
+.wizard-shell { max-width:980px; margin:0 auto; }
+.wizard-card { background:#ffffff; border:1px solid #e5ebdf; border-radius:36px; padding:26px; box-shadow:0 18px 50px rgba(22,40,22,.08); }
+.wizard-progress { display:flex; gap:8px; align-items:center; margin-bottom:18px; }
+.wizard-progress span { display:block; height:6px; flex:1; border-radius:999px; background:#d7dbd2; }
+.wizard-progress span.active { background:#2f4a39; }
+.wizard-kicker { color:#7f857e; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; font-size:12px; }
+.wizard-title { font-family:Manrope,sans-serif; color:#2d4335; font-weight:800; letter-spacing:-.6px; font-size:40px; line-height:1.1; margin:8px 0 4px; }
+.wizard-sub { color:#5c6b64; font-size:14px; margin-bottom:18px; }
+.wizard-section { background:#f6f8f2; border:1px solid #e8eee1; border-radius:18px; padding:14px 14px 4px; margin:12px 0; }
+.wizard-section-title { color:#2f4136; font-family:Manrope,sans-serif; font-weight:800; font-size:20px; margin-bottom:2px; }
+.wizard-section-copy { color:#617068; font-size:12px; margin-bottom:10px; }
 div[data-testid="stForm"] { border:0; padding:0; }
 .stProgress > div > div { background:var(--lg-green); }
-@media (max-width: 900px) { .page-title{font-size:25px;} .metric-value{font-size:23px;} .stack-card{width:min(165px, 72%);} }
-@media (max-width: 560px) { .block-container { padding-left: .8rem; padding-right: .8rem; } .stack-wrap { min-height:220px; } .stack-card { width: min(155px, 74%); height:198px; padding:12px; } .metric-value { font-size:21px; } }
+@media (max-width: 900px) { .page-title{font-size:25px;} .metric-value{font-size:23px;} .stack-wrap{min-height:274px;max-width:470px;} .stack-card{width:min(260px, 86%);height:250px;padding:15px;} .stack-card .stack-id{font-size:18px;} .stack-card .stack-label{font-size:11px;} .stack-card .stack-value{font-size:17px;} .stack-nav-left button,.stack-nav-right button{font-size:16px!important;min-height:44px!important;} .stack-nav-count{font-size:14px;} }
+@media (max-width: 900px) { .wizard-card { border-radius:26px; padding:18px; } .wizard-title { font-size:30px; } }
+@media (max-width: 560px) { .block-container { padding-left: .8rem; padding-right: .8rem; } .stack-wrap { min-height:256px; max-width:100%; } .stack-card { width: min(225px, 88%); height:236px; padding:13px; } .stack-card .stack-id{font-size:17px;} .stack-card .stack-label{font-size:10px;} .stack-card .stack-value{font-size:16px;} .stack-status{font-size:10px;padding:5px 9px;} .metric-value { font-size:21px; } }
 @media (prefers-reduced-motion: reduce) { .stack-card{transition:none;} *{scroll-behavior:auto!important;} }
 </style>
 """, unsafe_allow_html=True)
@@ -240,12 +374,12 @@ def render_card_stack(items, prefix="overview"):
     html = ['<div class="stack-wrap">']
     for pos, item in enumerate(reversed(visible)):
         offset = len(visible) - pos - 1
-        left = 8 + offset * 30
-        scale = 1 - offset * .035
-        opacity = 1 - offset * .12
+        left = 16 + offset * 42
+        scale = 1 - offset * .04
+        opacity = 1 - offset * .11
         z = 10 - offset
         html.append(f'''<div class="stack-card" style="left:{left}px;z-index:{z};transform:scale({scale});opacity:{opacity};">
-          <div style="display:flex;justify-content:space-between;align-items:center"><span class="metric-icon">♙</span><span style="font-size:10px;color:#9aa59d">•••</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span class="metric-icon">⌬</span><span style="font-size:20px;color:#9aa59d;line-height:1">···</span></div>
           <div class="stack-label">{item.get('created_at','Assessment')}</div><div class="stack-id">{item.get('id','Application')}</div>
           <div class="stack-label">Loan amount</div><div class="stack-value">{money(item.get('loan_amount'))}</div>
           <div style="display:flex;gap:12px;margin-top:8px"><div><div class="stack-label">CIBIL</div><div class="stack-value">{item.get('cibil','—')}</div></div><div><div class="stack-label">Income</div><div class="stack-value">{money(item.get('income'))}</div></div></div>
@@ -253,17 +387,21 @@ def render_card_stack(items, prefix="overview"):
         </div>''')
     html.append('</div>')
     st.markdown(''.join(html), unsafe_allow_html=True)
-    c1, c2, c3 = st.columns([1, 3, 1])
+    c1, c2, c3 = st.columns([1.1, 1.8, 1.1])
     with c1:
+        st.markdown('<div class="stack-nav-left">', unsafe_allow_html=True)
         if st.button("← Previous", key=f"{prefix}_prev", disabled=idx <= 0, use_container_width=True):
             st.session_state.stack_index = max(0, idx-1)
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with c2:
-        st.markdown(f'<div style="text-align:center;padding-top:10px;color:#87928a;font-size:11px">Assessment {idx+1} of {len(items)} · newest first</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="stack-nav-count">Assessment {idx+1} of {len(items)} · newest first</div>', unsafe_allow_html=True)
     with c3:
+        st.markdown('<div class="stack-nav-right">', unsafe_allow_html=True)
         if st.button("Next →", key=f"{prefix}_next", disabled=idx >= len(items)-1, use_container_width=True):
             st.session_state.stack_index = min(len(items)-1, idx+1)
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with st.expander("View selected assessment details"):
         d1, d2, d3 = st.columns(3)
         d1.write(f"**Application ID**\n\n{active.get('id')}")
@@ -321,8 +459,8 @@ if st.session_state.page == "Overview":
         st.markdown('''<div class="section-heading"><div class="card-title">CIBIL score distribution</div><div class="card-caption">Distribution across dataset records</div></div>''', unsafe_allow_html=True)
         cibil_series = pd.to_numeric(dataset["cibil_score"], errors="coerce").dropna()
         fig2 = px.histogram(x=cibil_series, nbins=18, color_discrete_sequence=["#83d83d"])
-        fig2.update_layout(height=220, margin=dict(l=0,r=0,t=5,b=0), bargap=.12, xaxis_title="CIBIL score", yaxis_title="Records", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#6f7b75",size=10))
-        fig2.update_xaxes(showgrid=False, zeroline=False); fig2.update_yaxes(gridcolor="#edf1ed", zeroline=False)
+        fig2.update_layout(height=220, margin=dict(l=0,r=0,t=5,b=0), bargap=.12, xaxis_title="CIBIL score", yaxis_title="Records", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#3f4b49",size=11))
+        fig2.update_xaxes(showgrid=False, zeroline=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11)); fig2.update_yaxes(gridcolor="#edf1ed", zeroline=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11))
         st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar":False}, key="overview_cibil")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     with right:
@@ -353,33 +491,31 @@ if st.session_state.page == "Overview":
 
 # --------------------------- NEW ASSESSMENT ---------------------------
 elif st.session_state.page == "New Assessment":
-    page_header("ASSESSMENT WORKFLOW", "New loan assessment", "Enter applicant information, review the details, and run the actual trained Random Forest model.", '<span class="top-chip">● Real inference</span>')
-    st.progress(1.0, text="Applicant details · complete the form to run the assessment")
-    st.caption("Enter the applicant’s actual values. The starting values are editable form defaults and are not a prediction.")
-    st.markdown('''<div class="section-heading"><div class="card-title">01 · Applicant profile</div><div class="card-caption">Enter the applicant’s profile information.</div></div>''', unsafe_allow_html=True)
+    st.markdown('<div class="assessment-ref-page"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="wizard-shell"><div class="wizard-card"><div class="wizard-progress"><span class="active"></span><span></span><span></span><span></span><span></span><span></span></div><div class="wizard-kicker">Question 01</div><div class="wizard-title">How would you like to assess this loan?</div><div class="wizard-sub">Provide applicant details below and run the model prediction.</div></div></div>', unsafe_allow_html=True)
     with st.form("loan_assessment_form", clear_on_submit=False):
+        st.markdown('<div class="wizard-shell">', unsafe_allow_html=True)
+        st.markdown('<div class="wizard-section"><div class="wizard-section-title">Applicant profile</div><div class="wizard-section-copy">Select only one option where applicable and fill all required values.</div></div>', unsafe_allow_html=True)
         c1,c2,c3 = st.columns(3)
         with c1: dependents = st.number_input("Number of dependents", min_value=0, max_value=20, value=2, step=1)
         with c2: self_employed = st.selectbox("Self-employed", list(employment_encoder.classes_))
         with c3: education = st.selectbox("Education", list(education_encoder.classes_))
-        # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
-        st.markdown('''<div class="section-heading"><div class="card-title">02 · Loan & credit details</div><div class="card-caption">Financial values should match the units used in the training dataset.</div></div>''', unsafe_allow_html=True)
+        st.markdown('<div class="wizard-section"><div class="wizard-section-title">Loan and credit details</div><div class="wizard-section-copy">Financial values should match the units used in the training dataset.</div></div>', unsafe_allow_html=True)
         a,b,c,d = st.columns(4)
         with a: income = st.number_input("Annual income (₹)", min_value=1, value=500000, step=50000)
         with b: loan_amount = st.number_input("Loan amount (₹)", min_value=1, value=1000000, step=50000)
         with c: loan_term = st.number_input("Loan term (years)", min_value=1, max_value=50, value=10, step=1)
         with d: cibil = st.number_input("CIBIL score", min_value=300, max_value=900, value=720, step=1)
-        # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
-        st.markdown('''<div class="section-heading"><div class="card-title">03 · Asset valuation</div><div class="card-caption">Declare the available asset values.</div></div>''', unsafe_allow_html=True)
+        st.markdown('<div class="wizard-section"><div class="wizard-section-title">Asset valuation</div><div class="wizard-section-copy">Declare the available asset values.</div></div>', unsafe_allow_html=True)
         e1,e2,e3,e4 = st.columns(4)
         with e1: residential = st.number_input("Residential assets (₹)", min_value=0, value=1000000, step=50000)
         with e2: commercial = st.number_input("Commercial assets (₹)", min_value=0, value=500000, step=50000)
         with e3: luxury = st.number_input("Luxury assets (₹)", min_value=0, value=500000, step=50000)
         with e4: bank_assets = st.number_input("Bank assets (₹)", min_value=0, value=500000, step=50000)
         total_assets = residential + commercial + luxury + bank_assets
-        st.markdown(f"<div style='background:#f4faef;border:1px solid #e0efcf;border-radius:12px;padding:12px 14px;margin:10px 0 16px'><span style='font-size:11px;color:#6f806b'>TOTAL DECLARED ASSETS</span><div style='font-size:22px;font-weight:800;color:#263b1d'>{money(total_assets)}</div></div>", unsafe_allow_html=True)
-        # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
+        st.markdown(f"<div style='background:#f4faef;border:1px solid #e0efcf;border-radius:16px;padding:14px 16px;margin:12px 0 18px'><span style='font-size:11px;color:#5d6d60;font-weight:700;letter-spacing:.6px'>TOTAL DECLARED ASSETS</span><div style='font-size:30px;font-weight:800;color:#263b1d;line-height:1.1'>{money(total_assets)}</div></div>", unsafe_allow_html=True)
         submitted = st.form_submit_button("Run real model prediction  →", type="primary", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if submitted:
         if income <= 0 or loan_amount <= 0:
@@ -468,15 +604,15 @@ elif st.session_state.page == "Risk Analytics":
         st.markdown('''<div class="section-heading"><div class="card-title">Income vs loan amount</div><div class="card-caption">Each point represents a dataset record</div></div>''', unsafe_allow_html=True)
         plot_df = dataset[["income_annum","loan_amount","loan_status"]].copy()
         fig = px.scatter(plot_df, x="income_annum", y="loan_amount", color="loan_status", color_discrete_map={"Approved":"#83d83d","Rejected":"#ff7772"}, opacity=.65, labels={"income_annum":"Annual income (₹)","loan_amount":"Loan amount (₹)","loan_status":"Dataset label"})
-        fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#6f7b75",size=10),legend_title_text="")
-        fig.update_xaxes(gridcolor="#edf1ed",zeroline=False);fig.update_yaxes(gridcolor="#edf1ed",zeroline=False)
+        fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),legend_title_text="")
+        fig.update_xaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11))
         st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="risk_scatter")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     with c2:
         st.markdown('''<div class="section-heading"><div class="card-title">CIBIL by dataset label</div><div class="card-caption">Distribution by recorded approval label</div></div>''', unsafe_allow_html=True)
         fig = px.box(dataset, x="loan_status", y="cibil_score", color="loan_status", color_discrete_map={"Approved":"#83d83d","Rejected":"#ff7772"}, labels={"loan_status":"Dataset label","cibil_score":"CIBIL score"})
-        fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#6f7b75",size=10),showlegend=False)
-        fig.update_xaxes(showgrid=False);fig.update_yaxes(gridcolor="#edf1ed",zeroline=False)
+        fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),showlegend=False)
+        fig.update_xaxes(showgrid=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11))
         st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="risk_box")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     st.caption("Associations in this dataset do not establish causation and should not be interpreted as a complete assessment of lending fairness or model suitability.")
@@ -509,7 +645,9 @@ elif st.session_state.page == "Model Performance":
         labels = [str(x).strip() for x in target_encoder.classes_]
         cm = confusion_matrix(y_test, y_pred, labels=np.arange(len(target_encoder.classes_)))
         fig = px.imshow(cm, text_auto=True, x=labels, y=labels, color_continuous_scale=[[0,"#f5faef"],[1,"#8bdc45"]], labels=dict(x="Predicted label",y="Actual label",color="Count"))
-        fig.update_layout(height=340,margin=dict(l=0,r=0,t=10,b=0),paper_bgcolor="rgba(0,0,0,0)",font=dict(color="#6f7b75",size=11),coloraxis_showscale=False)
+        fig.update_layout(height=340,margin=dict(l=0,r=0,t=10,b=0),paper_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),coloraxis_showscale=False)
+        fig.update_xaxes(title_font=dict(color="#2f3b39", size=12), tickfont=dict(color="#2f3b39", size=11))
+        fig.update_yaxes(title_font=dict(color="#2f3b39", size=12), tickfont=dict(color="#2f3b39", size=11))
         st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="confusion_matrix")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
         st.caption("Metrics are computed on the held-out split used by the project training script. They describe performance on this dataset split and do not guarantee real-world performance.")
@@ -517,8 +655,8 @@ elif st.session_state.page == "Model Performance":
             st.markdown('''<div class="section-heading"><div class="card-title">Random Forest feature importance</div><div class="card-caption">Importance values exposed by the saved estimator; not causal explanations</div></div>''', unsafe_allow_html=True)
             imp = pd.DataFrame({"Feature":list(model.feature_names_in_) if hasattr(model,"feature_names_in_") else FEATURES,"Importance":model.feature_importances_}).sort_values("Importance",ascending=True)
             fig = px.bar(imp,x="Importance",y="Feature",orientation="h",color_discrete_sequence=["#8bdc45"])
-            fig.update_layout(height=390,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#6f7b75",size=10))
-            fig.update_xaxes(gridcolor="#edf1ed");fig.update_yaxes(showgrid=False)
+            fig.update_layout(height=390,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11))
+            fig.update_xaxes(gridcolor="#edf1ed", title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(showgrid=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11))
             st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="feature_importance")
             # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     except Exception as exc:
