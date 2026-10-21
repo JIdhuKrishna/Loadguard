@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loan Approval Prediction</title>
+</head>
+<body>
+  <main>
+    <h1>Loan Approval Prediction</h1>
+    <form method="post">
+      <label>Dependents <input name="no_of_dependents" type="number" min="0" required></label>
+      <label>Education
+        <select name="education" required>
+          <option value="Graduate">Graduate</option>
+          <option value="Not Graduate">Not Graduate</option>
+        </select>
+      </label>
+      <label>Self employed
+        <select name="self_employed" required>
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>Annual income <input name="income_annum" type="number" min="0" required></label>
+      <label>Loan amount <input name="loan_amount" type="number" min="0" required></label>
+      <label>Loan term (years) <input name="loan_term" type="number" min="1" required></label>
+      <label>CIBIL score <input name="cibil_score" type="number" min="0" max="900" required></label>
+      <label>Residential assets <input name="residential_assets_value" type="number" min="0" required></label>
+      <label>Commercial assets <input name="commercial_assets_value" type="number" min="0" required></label>
+      <label>Luxury assets <input name="luxury_assets_value" type="number" min="0" required></label>
+      <label>Bank assets <input name="bank_asset_value" type="number" min="0" required></label>
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}<p>Prediction: <strong>{{ prediction }}</strong></p>{% endif %}
+    {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+  </main>
+</body>
+</html>
