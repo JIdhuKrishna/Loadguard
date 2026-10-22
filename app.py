@@ -17,9 +17,9 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # --------------------------- APP CONFIG ---------------------------
 st.set_page_config(
     page_title="LoanGuard AI · Loan Risk Assessment",
-    page_icon="🛡️",
+    page_icon="💚",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -88,11 +88,80 @@ st.markdown("""
 html, body, [class*="css"] { font-family:'DM Sans',sans-serif; }
 .stApp { background: #f3f6f4; color:var(--lg-ink); }
 .stApp p, .stApp li, .stApp label, .stApp .stMarkdown, .stApp [data-testid="stMarkdownContainer"] p { color:#2f3b39; }
-header[data-testid="stHeader"] { display:none!important; }
+/* Keep Streamlit's sidebar toggle available after the sidebar is collapsed. */
+header[data-testid="stHeader"] {
+    display:flex!important;
+    position:fixed!important;
+    inset:0 0 auto 0!important;
+    min-height:0!important;
+    height:0!important;
+    background:transparent!important;
+    border:0!important;
+    pointer-events:none!important;
+    z-index:1001!important;
+}
+header[data-testid="stHeader"] button[aria-label="Collapse sidebar"],
+header[data-testid="stHeader"] button[aria-label="Expand sidebar"] {
+    display:flex!important;
+    position:fixed!important;
+    top:10px!important;
+    left:8px!important;
+    z-index:1002!important;
+    pointer-events:auto!important;
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #2d4236!important;
+    border-radius:10px!important;
+    background:#172421!important;
+    color:#9BEA52!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.2)!important;
+}
+header[data-testid="stHeader"] button[aria-label="Collapse sidebar"] {
+    left:274px!important;
+}
+header[data-testid="stHeader"] button[aria-label="Collapse sidebar"] svg,
+header[data-testid="stHeader"] button[aria-label="Expand sidebar"] svg {
+    fill:#9BEA52!important;
+    stroke:#9BEA52!important;
+}
+/* Streamlit renders the reopen control outside the sidebar when collapsed. */
+[data-testid="stExpandSidebarButton"] {
+    display:flex!important;
+    visibility:visible!important;
+    position:fixed!important;
+    top:10px!important;
+    left:8px!important;
+    z-index:1002!important;
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #2d4236!important;
+    border-radius:10px!important;
+    background:#172421!important;
+    box-shadow:0 4px 14px rgba(0,0,0,.2)!important;
+}
+[data-testid="stExpandSidebarButton"] button {
+    visibility:visible!important;
+    color:#9BEA52!important;
+}
+[data-testid="stExpandSidebarButton"] svg {
+    fill:#9BEA52!important;
+    stroke:#9BEA52!important;
+}
+[data-testid="stSidebarCollapseButton"] button {
+    visibility:visible!important;
+}
 /* Lock app UX to light mode by hiding Streamlit's theme switch menu. */
 #MainMenu { visibility:hidden; }
 [data-testid="stToolbar"] { visibility:hidden; height:0; position:fixed; }
-.block-container { max-width:1380px; padding-top:.8rem; padding-bottom:2.4rem; }
+.block-container { max-width:1380px; padding-top:.8rem; padding-bottom:2.4rem; padding-left:1.2rem; padding-right:1.2rem; }
 [data-testid="stSidebar"] { background:linear-gradient(165deg,#101819 0%,#0c1214 100%); border-right:1px solid #273031; }
 [data-testid="stSidebar"] > div:first-child { padding-top:1rem; }
 [data-testid="stSidebar"][aria-expanded="true"] { min-width:290px; max-width:290px; }
@@ -107,7 +176,7 @@ header[data-testid="stHeader"] { display:none!important; }
 [data-testid="stSidebar"] [data-testid="stWidgetLabel"] { display:none; }
 .brand-box { background:#192323; border:1px solid #2d3938; border-radius:16px; padding:16px 14px; margin-bottom:20px; }
 .brand-row { display:flex; gap:10px; align-items:center; }
-.brand-icon { width:38px;height:38px;border-radius:12px;background:var(--lg-green);display:flex;align-items:center;justify-content:center;color:#10200b;font-size:20px;font-weight:800; }
+.brand-icon { width:38px;height:38px;border-radius:12px;background:var(--lg-green);display:flex;align-items:center;justify-content:center;color:#10200b;font-size:20px;font-weight:800;flex-shrink:0; }
 .brand-title { color:#f8fcf9;font-family:Manrope,sans-serif;font-weight:800;font-size:16px;letter-spacing:-.5px; }
 .brand-sub { color:#a8b5b0;font-size:10px;letter-spacing:.25px;margin-top:2px; }
 .sidebar-note { margin-top:2rem; padding:14px; border:1px solid #293a33; border-radius:14px; background:linear-gradient(150deg,#14211b,#101718); }
@@ -120,9 +189,9 @@ header[data-testid="stHeader"] { display:none!important; }
 .section-heading { background:var(--lg-surface); border:1px solid #e6ece8; border-bottom:0; border-radius:var(--lg-radius) var(--lg-radius) 0 0; padding:16px 18px 2px; margin-top:4px; }
 .section-heading + div { margin-top:0; }
 [data-testid="stVerticalBlock"] > [data-testid="stElementContainer"]:has(.section-heading) { margin-bottom:0; }
-.metric-card { background:var(--lg-surface); border:1px solid #e6ece8; border-radius:var(--lg-radius); padding:17px 18px; min-height:118px; box-shadow:var(--lg-shadow); }
+.metric-card { background:var(--lg-surface); border:1px solid #e6ece8; border-radius:var(--lg-radius); padding:17px 18px; min-height:110px; box-shadow:var(--lg-shadow); }
 .metric-top { display:flex; align-items:center; gap:9px; color:#465251; font-size:11px; font-weight:700; }
-.metric-icon { display:inline-flex; width:32px;height:32px;border-radius:11px;align-items:center;justify-content:center;background:#eaffd9;color:#386c1d;font-size:16px; }
+.metric-icon { display:inline-flex; width:32px;height:32px;border-radius:11px;align-items:center;justify-content:center;background:#eaffd9;color:#386c1d;font-size:16px;flex-shrink:0; }
 .metric-value { font-family:Manrope,sans-serif; font-size:27px; font-weight:800; letter-spacing:-.9px; margin-top:8px; color:#151d1d; }
 .metric-foot { color:#5e6a69; font-size:10px; margin-top:1px; }
 .card-title { font-family:Manrope,sans-serif; font-size:18px; font-weight:800; letter-spacing:-.25px; margin-bottom:3px; color:#17201e; }
@@ -132,7 +201,7 @@ header[data-testid="stHeader"] { display:none!important; }
 .model-card .model-name {font-family:Manrope,sans-serif;font-weight:800;font-size:21px;margin:10px 0 8px;}
 .model-card .model-status {display:inline-block;background:#baff7a;color:#18350b;padding:5px 10px;border-radius:99px;font-size:10px;font-weight:800;}
 .model-card .model-copy {font-size:11px;color:#d3dfd7;line-height:1.55;margin-top:14px;}
-.model-stat-row {display:flex;justify-content:space-between;border-top:1px solid #304039;margin-top:16px;padding-top:12px;gap:8px;}
+.model-stat-row {display:flex;justify-content:space-between;border-top:1px solid #304039;margin-top:16px;padding-top:12px;gap:8px;flex-wrap:wrap;}
 .model-stat {font-size:10px;color:#c3d2c8;}.model-stat strong {display:block;font-size:14px;color:#f7fff5;margin-bottom:2px;}
 .stack-wrap { position:relative; min-height:286px; width:100%; max-width:520px; margin:0 auto; overflow:hidden; padding:8px 6px 10px; box-sizing:border-box; }
 .stack-card { position:absolute; top:10px; width:min(286px, 84%); height:262px; box-sizing:border-box; padding:16px 16px 14px; border:1px solid #dce8dc; border-radius:20px; background:linear-gradient(160deg,#ffffff 0%,#f1f7ed 100%); box-shadow:0 14px 32px rgba(19,36,28,.12); transition:transform .35s ease,opacity .35s ease; }
@@ -150,7 +219,7 @@ div.stButton > button,
 div[data-testid="stFormSubmitButton"] button,
 button[data-testid="baseButton-primary"],
 button[data-testid="baseButton-secondary"] {
-    min-height:46px!important;
+    min-height:48px!important;
     padding:10px 18px!important;
     border-radius:12px!important;
     border:1px solid #151a24!important;
@@ -161,6 +230,8 @@ button[data-testid="baseButton-secondary"] {
     box-shadow:0 6px 16px rgba(18,24,31,.12)!important;
     transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .15s ease!important;
     opacity:1!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:transparent!important;
 }
 
 div.stButton > button:hover,
@@ -264,7 +335,14 @@ button[data-testid="baseButton-primary"]:hover {
     color:#ffffff!important;
     -webkit-text-fill-color:#ffffff!important;
 }
-.stTextInput input, .stNumberInput input, .stSelectbox [data-baseweb="select"] > div, .stDateInput input { border-radius:11px!important; }
+
+/* Form inputs - better touch targets on mobile */
+.stTextInput input, .stNumberInput input, .stSelectbox [data-baseweb="select"] > div, .stDateInput input {
+    border-radius:11px!important;
+    min-height:44px!important;
+}
+.stNumberInput input { font-size:16px!important; } /* prevents iOS zoom on focus */
+.stTextInput input { font-size:16px!important; }   /* prevents iOS zoom on focus */
 [data-testid="stMetric"] { background:#fff; border:1px solid #e6ece8; padding:13px 15px; border-radius:14px; }
 [data-testid="stMetricLabel"] { color:#56635f!important; }
 [data-testid="stMetricValue"] { color:#17201d!important; font-family:Manrope,sans-serif; }
@@ -285,6 +363,10 @@ hr { border-color:#e5ebe7; }
 .wizard-section-copy { color:#617068; font-size:12px; margin-bottom:10px; }
 div[data-testid="stForm"] { border:0; padding:0; }
 .stProgress > div > div { background:var(--lg-green); }
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablet - 768px to 900px */
 @media (max-width: 900px) {
     .page-title{font-size:34px;}
     .page-subtitle{font-size:14px;}
@@ -296,29 +378,169 @@ div[data-testid="stForm"] { border:0; padding:0; }
     .stack-card .stack-id{font-size:18px;}
     .stack-card .stack-label{font-size:11px;}
     .stack-card .stack-value{font-size:17px;}
-    .stack-nav-left button,.stack-nav-right button{font-size:16px!important;min-height:44px!important;}
+    .stack-nav-left button,.stack-nav-right button{font-size:16px!important;min-height:48px!important;}
     .stack-nav-count{font-size:14px;}
     .wizard-card { border-radius:20px; padding:18px; }
     .wizard-title { font-size:27px; }
+    .model-card { min-height:auto; }
 }
-@media (max-width: 560px) {
-    .block-container { padding-left: .8rem; padding-right: .8rem; }
-    [data-testid="stSidebar"][aria-expanded="true"] { min-width:88vw; max-width:88vw; }
-    [data-testid="stSidebar"] > div:first-child { padding-top:1.15rem; }
-    [data-testid="stSidebar"] .stRadio label { min-height:54px; padding:.85rem .95rem; border-radius:16px; }
-    [data-testid="stSidebar"] .stRadio label > div { font-size:15px; }
-    .page-title{font-size:30px;}
+
+/* Large mobile - 640px to 768px */
+@media (max-width: 768px) {
+    /* Restore header on mobile so the sidebar hamburger toggle is accessible */
+    header[data-testid="stHeader"] {
+        display:flex!important;
+        background:linear-gradient(90deg,#101819 0%,#0c1414 100%)!important;
+        border-bottom:1px solid #273031!important;
+        align-items:center!important;
+        min-height:54px!important;
+        position:sticky!important;
+        top:0!important;
+        z-index:999!important;
+        padding:0 12px!important;
+    }
+    /* Brand label injected into the mobile header via CSS pseudo-element */
+    header[data-testid="stHeader"]::after {
+        content:"⬡  LoanGuard AI";
+        position:absolute;
+        left:50%;
+        transform:translateX(-50%);
+        font-family:'DM Sans',sans-serif;
+        font-size:14px;
+        font-weight:700;
+        color:#f0f7f0;
+        letter-spacing:-.3px;
+        pointer-events:none;
+    }
+    /* Style ALL buttons inside the header (hamburger icon) */
+    header[data-testid="stHeader"] button {
+        color:#9BEA52!important;
+        background:transparent!important;
+        border:none!important;
+        box-shadow:none!important;
+        min-height:44px!important;
+        min-width:44px!important;
+    }
+    header[data-testid="stHeader"] button svg {
+        fill:#9BEA52!important;
+        stroke:#9BEA52!important;
+    }
+
+    /* ---- ALWAYS-VISIBLE "OPEN SIDEBAR" FLOATING TAB ---- */
+    /* When sidebar is collapsed, this element appears on the left edge */
+    [data-testid="collapsedControl"] {
+        display:flex!important;
+        position:fixed!important;
+        left:0!important;
+        top:50%!important;
+        transform:translateY(-50%)!important;
+        z-index:1002!important;
+        background:linear-gradient(160deg,#172421,#0c1414)!important;
+        border:1px solid #2d4236!important;
+        border-left:none!important;
+        border-radius:0 16px 16px 0!important;
+        padding:14px 10px 14px 6px!important;
+        min-width:38px!important;
+        min-height:72px!important;
+        align-items:center!important;
+        justify-content:center!important;
+        flex-direction:column!important;
+        gap:6px!important;
+        box-shadow:4px 0 16px rgba(0,0,0,.35)!important;
+        cursor:pointer!important;
+    }
+    /* The arrow/chevron inside the collapsed control */
+    [data-testid="collapsedControl"] svg {
+        fill:#9BEA52!important;
+        stroke:#9BEA52!important;
+        width:20px!important;
+        height:20px!important;
+    }
+    /* Green dot indicator so users know it's a menu */
+    [data-testid="collapsedControl"]::before {
+        content:"⬡";
+        font-size:14px;
+        color:#9BEA52;
+        line-height:1;
+    }
+    /* Add padding so content clears the sticky header */
+    .block-container { padding-left:1rem; padding-right:1rem; padding-top:.5rem; }
+    [data-testid="stSidebar"][aria-expanded="true"] { min-width:82vw; max-width:82vw; }
+    .page-title{font-size:30px;letter-spacing:-.6px;}
     .page-subtitle{font-size:13px;}
-    .card-title{font-size:16px;}
+    .metric-card{min-height:auto;padding:14px 15px;}
+    .metric-value{font-size:22px;}
+    .model-card{padding:16px;min-height:auto;}
+    .model-card .model-name{font-size:18px;}
+    .model-stat-row{gap:12px;}
+    .wizard-title{font-size:24px;}
+    .wizard-section-title{font-size:18px;}
+    /* Footer wrap */
+    [data-testid="stMarkdownContainer"] > div[style*="justify-content:space-between"] {
+        flex-direction:column!important;gap:6px!important;
+    }
+}
+
+/* Small mobile - up to 640px */
+@media (max-width: 640px) {
+    .block-container { padding-left:.7rem; padding-right:.7rem; }
+    [data-testid="stSidebar"][aria-expanded="true"] { min-width:90vw; max-width:90vw; }
+    [data-testid="stSidebar"] > div:first-child { padding-top:1.15rem; }
+    [data-testid="stSidebar"] .stRadio label { min-height:54px; padding:.9rem 1rem; border-radius:16px; }
+    [data-testid="stSidebar"] .stRadio label > div { font-size:15px; }
+    [data-testid="stSidebar"] .stRadio > div { gap:.55rem; }
+    /* Force multi-col grids to stack on small screens */
+    [data-testid="stHorizontalBlock"] { flex-wrap:wrap!important; gap:.6rem 0!important; }
+    [data-testid="stHorizontalBlock"] > [data-testid="stVerticalBlock"] { min-width:calc(50% - .4rem)!important; width:calc(50% - .4rem)!important; flex:1 1 calc(50% - .4rem)!important; }
+    /* 4-col blocks → 2×2 grid on mobile */
+    [data-testid="stHorizontalBlock"]:has(> [data-testid="stVerticalBlock"]:nth-child(4)) > [data-testid="stVerticalBlock"] { min-width:calc(50% - .4rem)!important; width:calc(50% - .4rem)!important; }
+    .page-title{font-size:26px;letter-spacing:-.5px;}
+    .page-subtitle{font-size:12px;margin-bottom:14px;}
+    .page-eyebrow{font-size:10px;}
+    .card-title{font-size:15px;}
     .card-caption{font-size:11px;}
+    .metric-card{padding:12px 13px;min-height:auto;}
+    .metric-value{font-size:19px;}
+    .metric-foot{font-size:9px;}
+    .metric-icon{width:28px;height:28px;font-size:14px;}
     .stack-wrap { min-height:256px; max-width:100%; }
-    .stack-card { width: min(225px, 88%); height:236px; padding:13px; }
+    .stack-card { width:min(225px, 88%); height:236px; padding:13px; }
     .stack-card .stack-id{font-size:17px;}
     .stack-card .stack-label{font-size:10px;}
     .stack-card .stack-value{font-size:16px;}
     .stack-status{font-size:10px;padding:5px 9px;}
-    .metric-value { font-size:21px; }
+    .stack-nav-count{font-size:12px;}
+    .stack-nav-left button,.stack-nav-right button{min-height:50px!important;}
+    .model-card{padding:14px;border-radius:16px;}
+    .model-card .model-name{font-size:17px;}
+    .wizard-card{padding:14px;border-radius:18px;}
+    .wizard-title{font-size:22px;}
+    .wizard-sub{font-size:13px;}
+    .wizard-section{padding:12px 12px 4px;}
+    .wizard-section-title{font-size:17px;}
+    .wizard-section-copy{font-size:11px;}
+    [data-testid="stMetric"]{padding:11px 12px;}
+    [data-testid="stMetricValue"] p{font-size:18px!important;}
+    [data-testid="stMetricLabel"] p{font-size:11px!important;}
+    .section-heading{padding:12px 14px 2px;}
 }
+
+/* Extra small mobile - up to 480px */
+@media (max-width: 480px) {
+    .block-container { padding-left:.5rem; padding-right:.5rem; }
+    /* Full-width stacking for very small screens */
+    [data-testid="stHorizontalBlock"] > [data-testid="stVerticalBlock"] { min-width:100%!important; width:100%!important; flex:1 1 100%!important; }
+    .page-title{font-size:23px;}
+    .metric-value{font-size:18px;}
+    [data-testid="stSidebar"][aria-expanded="true"] { min-width:95vw; max-width:95vw; }
+    .brand-title{font-size:15px;}
+    .stack-card{width:min(200px, 90%);height:224px;padding:12px;}
+    .stack-card .stack-id{font-size:16px;}
+    .wizard-title{font-size:20px;}
+    div.stButton > button, div[data-testid="stFormSubmitButton"] button { min-height:52px!important; font-size:15px!important; }
+    .top-chip{font-size:10px;padding:6px 10px;}
+}
+
 @media (prefers-reduced-motion: reduce) { .stack-card{transition:none;} *{scroll-behavior:auto!important;} }
 </style>
 """, unsafe_allow_html=True)
@@ -330,12 +552,18 @@ def money(value, decimals=0):
     return f"₹{float(value):,.{decimals}f}"
 
 def page_header(eyebrow, title, subtitle, right=None):
-    left, right_col = st.columns([4, 1.35], vertical_alignment="center")
-    with left:
-        st.markdown(f'<div class="page-eyebrow">{eyebrow}</div><div class="page-title">{title}</div><div class="page-subtitle">{subtitle}</div>', unsafe_allow_html=True)
-    with right_col:
-        if right:
-            st.markdown(f'<div style="text-align:right;padding-bottom:18px">{right}</div>', unsafe_allow_html=True)
+    right_html = f'<div style="flex-shrink:0;padding-bottom:4px">{right}</div>' if right else ''
+    st.markdown(
+        f'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">'
+        f'<div style="flex:1;min-width:0">'
+        f'<div class="page-eyebrow">{eyebrow}</div>'
+        f'<div class="page-title">{title}</div>'
+        f'<div class="page-subtitle">{subtitle}</div>'
+        f'</div>'
+        f'{right_html}'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
 def metric_card(label, value, foot, icon="◈"):
     st.markdown(f'''<div class="metric-card"><div class="metric-top"><span class="metric-icon">{icon}</span><span>{label}</span></div><div class="metric-value">{value}</div><div class="metric-foot">{foot}</div></div>''', unsafe_allow_html=True)
@@ -500,7 +728,7 @@ if st.session_state.page == "Overview":
         st.markdown('''<div class="section-heading"><div class="card-title">Loan status distribution</div><div class="card-caption">Actual labels in the supplied dataset</div></div>''', unsafe_allow_html=True)
         fig = go.Figure(data=[go.Pie(labels=["Approved", "Rejected"], values=[approved_count, rejected_count], hole=.68, marker=dict(colors=["#9BEA52", "#ff7772"], line=dict(color="#ffffff", width=4)), textinfo="none", hovertemplate="%{label}: %{value:,} (%{percent})<extra></extra>")])
         fig.update_layout(height=220, margin=dict(l=0,r=0,t=0,b=0), showlegend=True, legend=dict(orientation="h", y=-.08, x=.08, font=dict(size=10)), paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", annotations=[dict(text=f"{total_records:,}<br><span style='font-size:10px'>records</span>", x=.5,y=.5,showarrow=False,font=dict(size=20,color="#18201c"))])
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar":False}, key="overview_status")
+        st.plotly_chart(fig, width='stretch', config={"displayModeBar":False}, key="overview_status")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     with middle:
         st.markdown('''<div class="section-heading"><div class="card-title">CIBIL score distribution</div><div class="card-caption">Distribution across dataset records</div></div>''', unsafe_allow_html=True)
@@ -508,7 +736,7 @@ if st.session_state.page == "Overview":
         fig2 = px.histogram(x=cibil_series, nbins=18, color_discrete_sequence=["#83d83d"])
         fig2.update_layout(height=220, margin=dict(l=0,r=0,t=5,b=0), bargap=.12, xaxis_title="CIBIL score", yaxis_title="Records", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#3f4b49",size=11))
         fig2.update_xaxes(showgrid=False, zeroline=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11)); fig2.update_yaxes(gridcolor="#edf1ed", zeroline=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11))
-        st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar":False}, key="overview_cibil")
+        st.plotly_chart(fig2, width='stretch', config={"displayModeBar":False}, key="overview_cibil")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     with right:
         st.markdown(f'''<div class="model-card"><div class="model-kicker">Inference engine</div><div class="model-name">Random Forest</div><span class="model-status">● Model loaded</span><div class="model-copy">Trained model artifacts loaded successfully. Ready to assess applicant inputs.</div><div class="model-stat-row"><div class="model-stat"><strong>{getattr(model,'n_features_in_',len(FEATURES))}</strong>Input features</div><div class="model-stat"><strong>{getattr(model,'n_estimators','—')}</strong>Trees</div><div class="model-stat"><strong>Ready</strong>Status</div></div></div>''', unsafe_allow_html=True)
@@ -653,14 +881,14 @@ elif st.session_state.page == "Risk Analytics":
         fig = px.scatter(plot_df, x="income_annum", y="loan_amount", color="loan_status", color_discrete_map={"Approved":"#83d83d","Rejected":"#ff7772"}, opacity=.65, labels={"income_annum":"Annual income (₹)","loan_amount":"Loan amount (₹)","loan_status":"Dataset label"})
         fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),legend_title_text="")
         fig.update_xaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11))
-        st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="risk_scatter")
+        st.plotly_chart(fig,width='stretch',config={"displayModeBar":False},key="risk_scatter")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     with c2:
         st.markdown('''<div class="section-heading"><div class="card-title">CIBIL by dataset label</div><div class="card-caption">Distribution by recorded approval label</div></div>''', unsafe_allow_html=True)
         fig = px.box(dataset, x="loan_status", y="cibil_score", color="loan_status", color_discrete_map={"Approved":"#83d83d","Rejected":"#ff7772"}, labels={"loan_status":"Dataset label","cibil_score":"CIBIL score"})
         fig.update_layout(height=340,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),showlegend=False)
         fig.update_xaxes(showgrid=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(gridcolor="#edf1ed",zeroline=False,title_font=dict(color="#3f4b49", size=12),tickfont=dict(color="#3f4b49", size=11))
-        st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="risk_box")
+        st.plotly_chart(fig,width='stretch',config={"displayModeBar":False},key="risk_box")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     st.caption("Associations in this dataset do not establish causation and should not be interpreted as a complete assessment of lending fairness or model suitability.")
 
@@ -695,7 +923,7 @@ elif st.session_state.page == "Model Performance":
         fig.update_layout(height=340,margin=dict(l=0,r=0,t=10,b=0),paper_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11),coloraxis_showscale=False)
         fig.update_xaxes(title_font=dict(color="#2f3b39", size=12), tickfont=dict(color="#2f3b39", size=11))
         fig.update_yaxes(title_font=dict(color="#2f3b39", size=12), tickfont=dict(color="#2f3b39", size=11))
-        st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="confusion_matrix")
+        st.plotly_chart(fig,width='stretch',config={"displayModeBar":False},key="confusion_matrix")
         # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
         st.caption("Metrics are computed on the held-out split used by the project training script. They describe performance on this dataset split and do not guarantee real-world performance.")
         if hasattr(model, "feature_importances_"):
@@ -704,7 +932,7 @@ elif st.session_state.page == "Model Performance":
             fig = px.bar(imp,x="Importance",y="Feature",orientation="h",color_discrete_sequence=["#8bdc45"])
             fig.update_layout(height=390,margin=dict(l=0,r=0,t=5,b=0),paper_bgcolor="rgba(0,0,0,0)",plot_bgcolor="rgba(0,0,0,0)",font=dict(color="#3f4b49",size=11))
             fig.update_xaxes(gridcolor="#edf1ed", title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11));fig.update_yaxes(showgrid=False, title_font=dict(color="#3f4b49", size=12), tickfont=dict(color="#3f4b49", size=11))
-            st.plotly_chart(fig,use_container_width=True,config={"displayModeBar":False},key="feature_importance")
+            st.plotly_chart(fig,width='stretch',config={"displayModeBar":False},key="feature_importance")
             # Layout wrapper removed: Streamlit widgets must not be nested in raw HTML containers.
     except Exception as exc:
         st.error("Could not calculate evaluation metrics using the existing saved model and dataset split.")
